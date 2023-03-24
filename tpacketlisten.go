@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"io"
 	"net"
@@ -8,8 +9,12 @@ import (
 )
 
 func main() {
-	ln, err := net.Listen("tcp", ":8080")
-	fmt.Println("TCP server is running on localhost:8080")
+	port := flag.String("p", "10000", "Listening Port")
+	waittime := flag.Int("w", 1800, "Waiting second until close")
+	flag.Parse()
+
+	ln, err := net.Listen("tcp", ":"+*port)
+	fmt.Println("TCP server is running on localhost:" + *port)
 	if err != nil {
 		panic(err)
 	}
@@ -25,6 +30,7 @@ func main() {
 			io.WriteString(conn, "processing...")
 			time.Sleep(3 * time.Second)
 			io.WriteString(conn, "done")
+			time.Sleep((time.Duration(*waittime)) * time.Second)
 			conn.Close()
 		}()
 	}
